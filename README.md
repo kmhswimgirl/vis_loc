@@ -1,3 +1,4 @@
 # Visual Localization: VEX Override
+Localizing using only relative heading of certain objects proof of concept.
 
-Localizing using only relative heading
+Soon to be made into a ROS package.
