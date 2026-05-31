@@ -1,12 +1,13 @@
 import numpy as np
 import math
-from matplotlib import colors as mcolors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from utilities import wrap_angle, ang_diff
 from motion_model import MotionModel
 
 class Localize:
     def __init__(self, ax, field, max_particles, random, debug:bool) -> None:
+
+        # these will mostly be ROS parameters later.
         self.max_particles = max_particles
         self.particles = np.zeros((0, 3))
         self.field = field # for generating predicted goal headings
@@ -90,7 +91,7 @@ class Localize:
 
 
     def initial_draw(self, num_particles):
-        # generate rand locations and headings..
+        # generate rand locations and headings.
         x_particles = np.random.uniform(-6, 6, num_particles)
         y_particles = np.random.uniform(-6, 6, num_particles)
         th_particles = np.random.uniform(-180, 180, num_particles)
@@ -248,7 +249,7 @@ class Localize:
 
         data = np.column_stack([x, y, th])
         cov = np.cov(data, rowvar=False) 
-        
+
         return cov
     
     def update(self, odom: tuple, sensor_reading:list):
@@ -293,14 +294,14 @@ class Localize:
         
         # determine if resampling should occur
         n_eff = 1.0 / np.sum(self.weights ** 2)
-        resample = n_eff < (0.5 * len(self.weights))
+        resample = n_eff < (0.7 * len(self.weights))
         
         # resampling
         if resample or self.force_resample:
             idx = self._resample(self.weights)
             self.particles = self.particles[idx]
 
-            # keep most particles, but add a few random ones
+            # keep most particles, draw random ones based on the covariance 
             if self.random:
                 n_random = int(0.1 * len(self.particles))
                 rand_x = np.random.uniform(-6, 6, n_random)
